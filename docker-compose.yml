@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  spotifything:
+    restart: always
+    image: ralfpopescu/spotifything:latest
+    build: .
+    ports:
+    - "5000:5000"
+    environment:
+      FLASK_APP: /opt/app/spotifything.py
+    command: flask run
