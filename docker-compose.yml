@@ -9,4 +9,6 @@ services:
     - "5000:5000"
     environment:
       FLASK_APP: /opt/app/spotifything.py
+      CLIENT_ID: "0b0b92a99b264a6da92ce78353994034"
+      CLIENT_SECRET: "fcb8728571c748ecb8e47ac887c96dfc"
     command: flask run

@@ -1,3 +1,4 @@
+import os
 import json
 from flask import Flask, request, redirect, g, render_template
 import requests
@@ -7,23 +8,16 @@ import urllib
 app = Flask(__name__)
 
 REDIRECT_URI = 'http://127.0.0.1:5000/redirect'
-SPOTIFY_API_BASE_URL = "https://api.spotify.com"
-API_VERSION = "v1"
-SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
-CLIENT_ID = "0b0b92a99b264a6da92ce78353994034"
-CLIENT_SECRET = "fcb8728571c748ecb8e47ac887c96dfc"
-
-
+SPOTIFY_API_URL = "https://api.spotify.com/v1"
+CLIENT_ID = os.environ["CLIENT_ID"]
+CLIENT_SECRET = os.environ["CLIENT_SECRET"]
 
 @app.route('/')
 def requestAuth():
-   # r = requests.get("https://accounts.spotify.com/authorize/?client_id=0b0b92a99b264a6da92ce78353994034&response_type=code&redirect_uri=http://127.0.0.1")
-
    return redirect("https://accounts.spotify.com/authorize/?client_id=0b0b92a99b264a6da92ce78353994034&response_type=code&redirect_uri=" + REDIRECT_URI)
 
 @app.route("/redirect")
 def requestAccess():
-   code = 'no code'
    code = request.args.get('code')
    uri = 'https://accounts.spotify.com/api/token'
    SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
@@ -33,14 +27,9 @@ def requestAccess():
        "redirect_uri": REDIRECT_URI
    }
 
-   print(str(code_payload))
-   print("asdf")
-
    base64encoded = str(base64.b64encode("{}:{}".format(CLIENT_ID, CLIENT_SECRET).encode('ascii')), 'ascii')
    headers = {"Authorization": "Basic {}".format(base64encoded)}
    post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
-
-
 
    # Auth Step 5: Tokens are Returned to Application
    response_data = json.loads(post_request.text)
@@ -66,15 +55,7 @@ def requestAccess():
    playlists_response = requests.get(playlist_api_endpoint, headers=authorization_header)
    playlist_data = json.loads(playlists_response.text)
 
-   # Combine profile and playlist data to display
-   display_arr = [profile_data] + playlist_data["items"]
-   x = playlist_data.keys()
-   string = ""
-   for y in x:
-       string += " " + y
-
-
-   return string
+   return playlist_data
 
 if __name__ == '__main__':
       app.run(host='0.0.0.0')
