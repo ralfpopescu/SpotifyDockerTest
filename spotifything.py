@@ -42,20 +42,20 @@ def requestAccess():
    token_type = response_data["token_type"]
    expires_in = response_data["expires_in"]
 
-   # Auth Step 6: Use the access token to access Spotify API
-   authorization_header = {"Authorization":"Bearer {}".format(access_token)}
+   with open('access_token.txt', 'w') as f:
+       f.write(access_token)
 
-   # Get profile data
-   user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
-   profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header)
-   profile_data = json.loads(profile_response.text)
+   return { 'message': 'Success!' }
 
-    # Get user playlist data
-   playlist_api_endpoint = "{}/playlists".format(profile_data["href"])
-   playlists_response = requests.get(playlist_api_endpoint, headers=authorization_header)
-   playlist_data = json.loads(playlists_response.text)
+@app.route('/access-token')
+def get_access_token():
+   # read access token from file and return to client
+   pass
 
-   return playlist_data
+@app.route('/playlists', methods=['POST'])
+def create_playlist():
+   # produce message to kafka that defines the playlist you want to create
+   pass
 
 if __name__ == '__main__':
-      app.run(host='0.0.0.0')
+   app.run(host='0.0.0.0')
